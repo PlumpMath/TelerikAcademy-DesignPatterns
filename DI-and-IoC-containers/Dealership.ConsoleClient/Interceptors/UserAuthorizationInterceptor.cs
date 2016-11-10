@@ -14,10 +14,11 @@ namespace Dealership.ConsoleClient.Interceptors
             if (userService.LoggedUser == null)
             {
                 invocation.ReturnValue = UserNotLogged;
-                return;
             }
-
-            invocation.Proceed();
+            else
+            {
+                invocation.Proceed();
+            }
         }
     }
 }

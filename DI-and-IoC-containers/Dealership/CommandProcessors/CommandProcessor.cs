@@ -12,7 +12,7 @@ namespace Dealership.CommandProcessors
             this.Successor = null;
         }
 
-        public ICommandProcessor Successor { get; set; }
+        public IChainableCommandProcessor Successor { get; set; }
 
         public string Process(ICommand command)
         {

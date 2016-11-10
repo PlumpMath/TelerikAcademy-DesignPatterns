@@ -1,14 +1,15 @@
 ﻿using Dealership.CommandProcessors;
 using Dealership.ConsoleClient.Common;
 using Dealership.Contracts;
+using Dealership.Decorators;
 using Dealership.Engine;
 using Dealership.Models;
 using Ninject;
+using Ninject.Activation;
 using Ninject.Extensions.Conventions;
 using Ninject.Extensions.Factory;
-using Ninject.Extensions.Interception;
-using Ninject.Extensions.Interception.Infrastructure.Language;
 using Ninject.Modules;
+using Ninject.Parameters;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,6 +28,11 @@ namespace Dealership.ConsoleClient.Configuration
         private const string RemoveVehicleCommandProcessorName = "RemoveVehicleCommandProcessor";
         private const string ShowUsersCommandProcessorName = "ShowUsersCommandProcessor";
         private const string ShowVehiclesCommandProcessorName = "ShowVehiclesCommandProcessorName";
+        private const string AuthorizedCommandProcessorName = "AuthorizedCommandProcessor";
+
+        private const string CommanProcessorContructorArgumentName = "commandProcessor";
+        private const string UserServiceContructorArgumentName = "userService";
+
         private const string CarName = "Car";
         private const string MotorcycleName = "Motorcycle";
         private const string TruckName = "Truck";
@@ -61,7 +67,6 @@ namespace Dealership.ConsoleClient.Configuration
             Bind<IVehicle>().To<Truck>().Named(TruckName);
 
             Bind<IChainableCommandProcessor>().To<AddCommentCommandProcessor>().Named(AddCommentCommandProcessorName);
-            Kernel.InterceptReplace<AddCommentCommandProcessor>(x => x.Process(null), invocation => this.AuthorizeUserAspect(invocation, Kernel.Get<IUserService>()));
             Bind<IChainableCommandProcessor>().To<AddVehicleCommandProcessor>().Named(AddVehicleCommandProcessorName);
             Bind<IChainableCommandProcessor>().To<LoginCommandProcessor>().Named(LoginCommandProcessorName);
             Bind<IChainableCommandProcessor>().To<LogoutCommandProcessor>().Named(LogoutCommandProcessorName);
@@ -70,42 +75,41 @@ namespace Dealership.ConsoleClient.Configuration
             Bind<IChainableCommandProcessor>().To<RemoveVehicleCommandProcessor>().Named(RemoveVehicleCommandProcessorName);
             Bind<IChainableCommandProcessor>().To<ShowUsersCommandProcessor>().Named(ShowUsersCommandProcessorName);
             Bind<IChainableCommandProcessor>().To<ShowVehiclesCommandProcessor>().Named(ShowVehiclesCommandProcessorName);
+
+            Bind<IChainableCommandProcessor>().To<AuthorizedCommandProcessor>().Named(AuthorizedCommandProcessorName);
+
             Bind<ICommandProcessor>().ToMethod(context =>
             {
                 var registerCommandProcessor = context.Kernel.Get<IChainableCommandProcessor>(RegisterCommandProcessorName);
                 var loginCommandProcessor = context.Kernel.Get<IChainableCommandProcessor>(LoginCommandProcessorName);
-                var logoutCommandProcessor = context.Kernel.Get<IChainableCommandProcessor>(LogoutCommandProcessorName);
-                var addVehicleCommandProcessor = context.Kernel.Get<IChainableCommandProcessor>(AddVehicleCommandProcessorName);
-                var removeVehicleCommandProcessor = context.Kernel.Get<IChainableCommandProcessor>(RemoveVehicleCommandProcessorName);
-                var addCommentCommandProcessor = context.Kernel.Get<IChainableCommandProcessor>(AddCommentCommandProcessorName);
-                var removeCommentCommandProcessor = context.Kernel.Get<IChainableCommandProcessor>(RemoveCommentCommandProcessorName);
-                var showUsersCommandProcessor = context.Kernel.Get<IChainableCommandProcessor>(ShowUsersCommandProcessorName);
-                var showVehiclesCommandProcessor = context.Kernel.Get<IChainableCommandProcessor>(ShowVehiclesCommandProcessorName);
+                var authorizedLogoutCommandProcessor = this.GetAuthorizedCommandProcessor(context, LogoutCommandProcessorName);
+                var authorizedAddVehicleCommandProcessor = this.GetAuthorizedCommandProcessor(context, AddVehicleCommandProcessorName);
+                var authorizedRemoveVehicleCommandProcessor = this.GetAuthorizedCommandProcessor(context, RemoveVehicleCommandProcessorName);
+                var authorizedAddCommentCommandProcessor = this.GetAuthorizedCommandProcessor(context, AddCommentCommandProcessorName);
+                var authorizedRemoveCommentCommandProcessor = this.GetAuthorizedCommandProcessor(context, RemoveCommentCommandProcessorName);
+                var authorizedShowUsersCommandProcessor = this.GetAuthorizedCommandProcessor(context, ShowUsersCommandProcessorName);
+                var authorizedShowVehiclesCommandProcessor = this.GetAuthorizedCommandProcessor(context, ShowVehiclesCommandProcessorName);
 
                 registerCommandProcessor.Successor = loginCommandProcessor;
-                loginCommandProcessor.Successor = logoutCommandProcessor;
-                logoutCommandProcessor.Successor = addVehicleCommandProcessor;
-                addVehicleCommandProcessor.Successor = removeVehicleCommandProcessor;
-                removeVehicleCommandProcessor.Successor = addCommentCommandProcessor;
-                addCommentCommandProcessor.Successor = removeCommentCommandProcessor;
-                removeCommentCommandProcessor.Successor = showUsersCommandProcessor;
-                showUsersCommandProcessor.Successor = showVehiclesCommandProcessor;
-                showVehiclesCommandProcessor.Successor = null;
+                loginCommandProcessor.Successor = authorizedLogoutCommandProcessor;
+                authorizedLogoutCommandProcessor.Successor = authorizedAddVehicleCommandProcessor;
+                authorizedAddVehicleCommandProcessor.Successor = authorizedRemoveVehicleCommandProcessor;
+                authorizedRemoveVehicleCommandProcessor.Successor = authorizedAddCommentCommandProcessor;
+                authorizedAddCommentCommandProcessor.Successor = authorizedRemoveCommentCommandProcessor;
+                authorizedRemoveCommentCommandProcessor.Successor = authorizedShowUsersCommandProcessor;
+                authorizedShowUsersCommandProcessor.Successor = authorizedShowVehiclesCommandProcessor;
+                authorizedShowVehiclesCommandProcessor.Successor = null;
 
                 return registerCommandProcessor;
             });
         }
 
-        private void AuthorizeUserAspect(IInvocation invocation, IUserService userService)
+        private IChainableCommandProcessor GetAuthorizedCommandProcessor(IContext context, string commandProcessorName)
         {
-            if (userService.LoggedUser == null)
-            {
-                invocation.ReturnValue = UserNotLogged;
-            }
-            else
-            {
-                invocation.Proceed();
-            }
+            return context.Kernel.Get<IChainableCommandProcessor>(
+                    AuthorizedCommandProcessorName,
+                    new ConstructorArgument(CommanProcessorContructorArgumentName, context.Kernel.Get<IChainableCommandProcessor>(commandProcessorName)),
+                    new ConstructorArgument(UserServiceContructorArgumentName, context.Kernel.Get<IUserService>()));
         }
     }
 }

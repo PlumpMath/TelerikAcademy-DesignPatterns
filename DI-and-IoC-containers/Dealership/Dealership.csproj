@@ -77,6 +77,7 @@
     <Compile Include="Contracts\IUserFactory.cs" />
     <Compile Include="Contracts\IVehicle.cs" />
     <Compile Include="Contracts\IVehicleFactory.cs" />
+    <Compile Include="Decorators\AuthorizedCommandProcessor.cs" />
     <Compile Include="Engine\Command.cs" />
     <Compile Include="Engine\DealershipEngine.cs" />
     <Compile Include="Engine\ICommand.cs" />

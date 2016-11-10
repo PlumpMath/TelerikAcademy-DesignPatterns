@@ -2,6 +2,6 @@
 {
     public interface IChainableCommandProcessor : ICommandProcessor
     {
-        ICommandProcessor Successor { get; set; }
+        IChainableCommandProcessor Successor { get; set; }
     }
 }
