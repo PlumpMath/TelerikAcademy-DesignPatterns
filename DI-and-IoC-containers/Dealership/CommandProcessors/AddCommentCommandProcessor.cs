@@ -4,7 +4,7 @@ using Dealership.Common;
 
 namespace Dealership.CommandProcessors
 {
-    public class AddCommentCommandProcessor : CommandProcessor, ICommandProcessor
+    public class AddCommentCommandProcessor : CommandProcessor, ICommandProcessor, IChainableCommandProcessor
     {
         private const string CommentAddedSuccessfully = "{0} added comment successfully!";
         private const string NoSuchUser = "There is no user with username {0}!";

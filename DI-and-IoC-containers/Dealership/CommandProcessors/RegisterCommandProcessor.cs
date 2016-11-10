@@ -5,7 +5,7 @@ using Dealership.Common.Enums;
 
 namespace Dealership.CommandProcessors
 {
-    public class RegisterCommandProcessor : CommandProcessor, ICommandProcessor
+    public class RegisterCommandProcessor : CommandProcessor, ICommandProcessor, IChainableCommandProcessor
     {
         private const string UserAlreadyExist = "User {0} already exist. Choose a different username!";
         private const string UserLoggedInAlready = "User {0} is logged in! Please log out first!";

@@ -59,6 +59,7 @@
     <Compile Include="Common\Enums\Role.cs" />
     <Compile Include="Common\Validator.cs" />
     <Compile Include="Contracts\ICar.cs" />
+    <Compile Include="Contracts\IChainableCommandProcessor.cs" />
     <Compile Include="Contracts\ICommandFactory.cs" />
     <Compile Include="Contracts\ICommandProcessor.cs" />
     <Compile Include="Contracts\ICommandReader.cs" />

@@ -1,6 +1,4 @@
-﻿using Dealership.ConsoleClient.Configuration;
-using Dealership.Contracts;
-using Dealership.Engine;
+﻿using Dealership.Contracts;
 using Ninject;
 using Ninject.Extensions.Interception;
 
@@ -12,13 +10,12 @@ namespace Dealership.ConsoleClient.Interceptors
 
         public void Intercept(IInvocation invocation)
         {
-            //var kernel = new StandardKernel(new DealershipModule());
-            //var userService = kernel.Get<IUserService>();
-            //if (userService.LoggedUser == null)
-            //{
-            //    invocation.ReturnValue = UserNotLogged;
-            //    return;
-            //}
+            var userService = invocation.Request.Kernel.Get<IUserService>();
+            if (userService.LoggedUser == null)
+            {
+                invocation.ReturnValue = UserNotLogged;
+                return;
+            }
 
             invocation.Proceed();
         }

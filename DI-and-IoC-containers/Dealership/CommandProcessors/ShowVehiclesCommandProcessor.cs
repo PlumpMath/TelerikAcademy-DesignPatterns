@@ -3,7 +3,7 @@ using Dealership.Engine;
 
 namespace Dealership.CommandProcessors
 {
-    public class ShowVehiclesCommandProcessor : CommandProcessor, ICommandProcessor
+    public class ShowVehiclesCommandProcessor : CommandProcessor, ICommandProcessor, IChainableCommandProcessor
     {
         private const string NoSuchUser = "There is no user with username {0}!";
 

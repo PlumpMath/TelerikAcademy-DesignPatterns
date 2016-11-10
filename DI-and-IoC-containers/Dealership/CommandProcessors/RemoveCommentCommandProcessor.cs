@@ -4,7 +4,7 @@ using Dealership.Common;
 
 namespace Dealership.CommandProcessors
 {
-    public class RemoveCommentCommandProcessor : CommandProcessor, ICommandProcessor
+    public class RemoveCommentCommandProcessor : CommandProcessor, ICommandProcessor, IChainableCommandProcessor
     {
         private const string NoSuchUser = "There is no user with username {0}!";
         private const string RemovedVehicleDoesNotExist = "Cannot remove comment! The vehicle does not exist!";

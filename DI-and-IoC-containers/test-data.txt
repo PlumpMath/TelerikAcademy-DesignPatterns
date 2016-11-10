@@ -1,6 +1,9 @@
 RegisterUser gosho gosho goshov 123456
 AddVehicle Car Opel Corsa 25000 5
+AddComment comment gosho 1
 Logout
 RegisterUser pesho gosho goshov 123456 Admin
 ShowUsers
 ShowVehicles gosho
+Logout
+AddComment comment gosho 1

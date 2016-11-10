@@ -3,7 +3,7 @@ using Dealership.Engine;
 
 namespace Dealership.CommandProcessors
 {
-    public abstract class CommandProcessor : ICommandProcessor
+    public abstract class CommandProcessor : ICommandProcessor, IChainableCommandProcessor
     {
         private const string InvalidCommand = "Invalid command!";
 

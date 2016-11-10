@@ -3,7 +3,7 @@ using Dealership.Engine;
 
 namespace Dealership.CommandProcessors
 {
-    public class LogoutCommandProcessor : CommandProcessor, ICommandProcessor
+    public class LogoutCommandProcessor : CommandProcessor, ICommandProcessor, IChainableCommandProcessor
     {
         private const string UserLoggedOut = "You logged out!";
 

@@ -4,7 +4,7 @@ using Dealership.Common;
 
 namespace Dealership.CommandProcessors
 {
-    public class RemoveVehicleCommandProcessor : CommandProcessor, ICommandProcessor
+    public class RemoveVehicleCommandProcessor : CommandProcessor, ICommandProcessor, IChainableCommandProcessor
     {
         private const string VehicleRemovedSuccessfully = "{0} removed vehicle successfully!";
         private const string RemovedVehicleDoesNotExist = "Cannot remove comment! The vehicle does not exist!";

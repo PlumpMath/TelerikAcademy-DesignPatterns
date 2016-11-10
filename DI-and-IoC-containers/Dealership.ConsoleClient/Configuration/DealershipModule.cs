@@ -1,15 +1,14 @@
 ﻿using Dealership.CommandProcessors;
 using Dealership.ConsoleClient.Common;
-using Dealership.ConsoleClient.Interceptors;
 using Dealership.Contracts;
 using Dealership.Engine;
 using Dealership.Models;
 using Ninject;
 using Ninject.Extensions.Conventions;
 using Ninject.Extensions.Factory;
+using Ninject.Extensions.Interception;
 using Ninject.Extensions.Interception.Infrastructure.Language;
 using Ninject.Modules;
-using Ninject.Parameters;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,6 +30,8 @@ namespace Dealership.ConsoleClient.Configuration
         private const string CarName = "Car";
         private const string MotorcycleName = "Motorcycle";
         private const string TruckName = "Truck";
+
+        private const string UserNotLogged = "You are not logged! Please login first!";
 
         public override void Load()
         {
@@ -59,26 +60,27 @@ namespace Dealership.ConsoleClient.Configuration
             Bind<IVehicle>().To<Motorcycle>().Named(MotorcycleName);
             Bind<IVehicle>().To<Truck>().Named(TruckName);
 
-            Bind<CommandProcessor>().To<AddCommentCommandProcessor>().Named(AddCommentCommandProcessorName);//.Intercept().With<UserAuthorizationInterceptor>();
-            Bind<CommandProcessor>().To<AddVehicleCommandProcessor>().Named(AddVehicleCommandProcessorName);//.Intercept().With<UserAuthorizationInterceptor>();
-            Bind<CommandProcessor>().To<LoginCommandProcessor>().Named(LoginCommandProcessorName);
-            Bind<CommandProcessor>().To<LogoutCommandProcessor>().Named(LogoutCommandProcessorName);//.Intercept().With<UserAuthorizationInterceptor>();
-            Bind<CommandProcessor>().To<RegisterCommandProcessor>().Named(RegisterCommandProcessorName);
-            Bind<CommandProcessor>().To<RemoveCommentCommandProcessor>().Named(RemoveCommentCommandProcessorName);//.Intercept().With<UserAuthorizationInterceptor>();
-            Bind<CommandProcessor>().To<RemoveVehicleCommandProcessor>().Named(RemoveVehicleCommandProcessorName);//.Intercept().With<UserAuthorizationInterceptor>();
-            Bind<CommandProcessor>().To<ShowUsersCommandProcessor>().Named(ShowUsersCommandProcessorName);//.Intercept().With<UserAuthorizationInterceptor>();
-            Bind<CommandProcessor>().To<ShowVehiclesCommandProcessor>().Named(ShowVehiclesCommandProcessorName);//.Intercept().With<UserAuthorizationInterceptor>();
+            Bind<IChainableCommandProcessor>().To<AddCommentCommandProcessor>().Named(AddCommentCommandProcessorName);
+            Kernel.InterceptReplace<AddCommentCommandProcessor>(x => x.Process(null), invocation => this.AuthorizeUserAspect(invocation, Kernel.Get<IUserService>()));
+            Bind<IChainableCommandProcessor>().To<AddVehicleCommandProcessor>().Named(AddVehicleCommandProcessorName);
+            Bind<IChainableCommandProcessor>().To<LoginCommandProcessor>().Named(LoginCommandProcessorName);
+            Bind<IChainableCommandProcessor>().To<LogoutCommandProcessor>().Named(LogoutCommandProcessorName);
+            Bind<IChainableCommandProcessor>().To<RegisterCommandProcessor>().Named(RegisterCommandProcessorName);
+            Bind<IChainableCommandProcessor>().To<RemoveCommentCommandProcessor>().Named(RemoveCommentCommandProcessorName);
+            Bind<IChainableCommandProcessor>().To<RemoveVehicleCommandProcessor>().Named(RemoveVehicleCommandProcessorName);
+            Bind<IChainableCommandProcessor>().To<ShowUsersCommandProcessor>().Named(ShowUsersCommandProcessorName);
+            Bind<IChainableCommandProcessor>().To<ShowVehiclesCommandProcessor>().Named(ShowVehiclesCommandProcessorName);
             Bind<ICommandProcessor>().ToMethod(context =>
             {
-                var registerCommandProcessor = context.Kernel.Get<CommandProcessor>(RegisterCommandProcessorName);
-                var loginCommandProcessor = context.Kernel.Get<CommandProcessor>(LoginCommandProcessorName);
-                var logoutCommandProcessor = context.Kernel.Get<CommandProcessor>(LogoutCommandProcessorName);
-                var addVehicleCommandProcessor = context.Kernel.Get<CommandProcessor>(AddVehicleCommandProcessorName);
-                var removeVehicleCommandProcessor = context.Kernel.Get<CommandProcessor>(RemoveVehicleCommandProcessorName);
-                var addCommentCommandProcessor = context.Kernel.Get<CommandProcessor>(AddCommentCommandProcessorName);
-                var removeCommentCommandProcessor = context.Kernel.Get<CommandProcessor>(RemoveCommentCommandProcessorName);
-                var showUsersCommandProcessor = context.Kernel.Get<CommandProcessor>(ShowUsersCommandProcessorName);
-                var showVehiclesCommandProcessor = context.Kernel.Get<CommandProcessor>(ShowVehiclesCommandProcessorName);
+                var registerCommandProcessor = context.Kernel.Get<IChainableCommandProcessor>(RegisterCommandProcessorName);
+                var loginCommandProcessor = context.Kernel.Get<IChainableCommandProcessor>(LoginCommandProcessorName);
+                var logoutCommandProcessor = context.Kernel.Get<IChainableCommandProcessor>(LogoutCommandProcessorName);
+                var addVehicleCommandProcessor = context.Kernel.Get<IChainableCommandProcessor>(AddVehicleCommandProcessorName);
+                var removeVehicleCommandProcessor = context.Kernel.Get<IChainableCommandProcessor>(RemoveVehicleCommandProcessorName);
+                var addCommentCommandProcessor = context.Kernel.Get<IChainableCommandProcessor>(AddCommentCommandProcessorName);
+                var removeCommentCommandProcessor = context.Kernel.Get<IChainableCommandProcessor>(RemoveCommentCommandProcessorName);
+                var showUsersCommandProcessor = context.Kernel.Get<IChainableCommandProcessor>(ShowUsersCommandProcessorName);
+                var showVehiclesCommandProcessor = context.Kernel.Get<IChainableCommandProcessor>(ShowVehiclesCommandProcessorName);
 
                 registerCommandProcessor.Successor = loginCommandProcessor;
                 loginCommandProcessor.Successor = logoutCommandProcessor;
@@ -92,6 +94,18 @@ namespace Dealership.ConsoleClient.Configuration
 
                 return registerCommandProcessor;
             });
+        }
+
+        private void AuthorizeUserAspect(IInvocation invocation, IUserService userService)
+        {
+            if (userService.LoggedUser == null)
+            {
+                invocation.ReturnValue = UserNotLogged;
+            }
+            else
+            {
+                invocation.Proceed();
+            }
         }
     }
 }

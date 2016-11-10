@@ -5,7 +5,7 @@ using Dealership.Common.Enums;
 
 namespace Dealership.CommandProcessors
 {
-    public class ShowUsersCommandProcessor : CommandProcessor, ICommandProcessor
+    public class ShowUsersCommandProcessor : CommandProcessor, ICommandProcessor, IChainableCommandProcessor
     {
         private const string YouAreNotAnAdmin = "You are not an admin!";
 

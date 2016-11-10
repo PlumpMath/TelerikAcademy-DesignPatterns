@@ -3,7 +3,7 @@ using Dealership.Engine;
 
 namespace Dealership.CommandProcessors
 {
-    public class LoginCommandProcessor : CommandProcessor, ICommandProcessor
+    public class LoginCommandProcessor : CommandProcessor, ICommandProcessor, IChainableCommandProcessor
     {
         private const string UserLoggedInAlready = "User {0} is logged in! Please log out first!";
         private const string UserLoggedIn = "User {0} successfully logged in!";

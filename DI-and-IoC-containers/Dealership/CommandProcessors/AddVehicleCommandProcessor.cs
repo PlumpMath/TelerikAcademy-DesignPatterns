@@ -5,7 +5,7 @@ using Dealership.Common.Enums;
 
 namespace Dealership.CommandProcessors
 {
-    public class AddVehicleCommandProcessor : CommandProcessor, ICommandProcessor
+    public class AddVehicleCommandProcessor : CommandProcessor, ICommandProcessor, IChainableCommandProcessor
     {
         private const string VehicleAddedSuccessfully = "{0} added vehicle successfully!";
 
