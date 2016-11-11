@@ -2,6 +2,7 @@
 using System.Text;
 using Dealership.Engine;
 using Dealership.Common.Enums;
+using Dealership.Common;
 
 namespace Dealership.CommandProcessors
 {
@@ -15,6 +16,8 @@ namespace Dealership.CommandProcessors
 
         public ShowUsersCommandProcessor(IUserService userService)
         {
+            Validator.ValidateNull(userService, "userService");
+
             this.userService = userService;
         }
 

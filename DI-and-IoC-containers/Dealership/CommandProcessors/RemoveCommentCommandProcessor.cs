@@ -17,6 +17,8 @@ namespace Dealership.CommandProcessors
 
         public RemoveCommentCommandProcessor(IUserService userService)
         {
+            Validator.ValidateNull(userService, "userService");
+
             this.userService = userService;
         }
 

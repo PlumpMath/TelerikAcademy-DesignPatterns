@@ -1,5 +1,7 @@
 ﻿using Dealership.Engine;
 using Dealership.Contracts;
+using System;
+using Dealership.Common;
 
 namespace Dealership.Decorators
 {
@@ -12,6 +14,9 @@ namespace Dealership.Decorators
 
         public AuthorizedCommandProcessor(IChainableCommandProcessor commandProcessor, IUserService userService)
         {
+            Validator.ValidateNull(commandProcessor, "commandProcessor");
+            Validator.ValidateNull(userService, "userService");
+
             this.commandProcessor = commandProcessor;
             this.userService = userService;
         }

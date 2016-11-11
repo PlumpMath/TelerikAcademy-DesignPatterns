@@ -1,6 +1,8 @@
 ﻿using Dealership.Contracts;
 using System.Collections.Generic;
 using Dealership.Engine;
+using System;
+using Dealership.Common;
 
 namespace Dealership.CommandReaders
 {
@@ -11,6 +13,9 @@ namespace Dealership.CommandReaders
 
         public CommandReader(IInputReader inputReader, ICommandFactory commandFactory)
         {
+            Validator.ValidateNull(inputReader, "inputReader");
+            Validator.ValidateNull(commandFactory, "commandFactory");
+
             this.inputReader = inputReader;
             this.commandFactory = commandFactory;
         }

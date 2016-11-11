@@ -1,4 +1,5 @@
-﻿using Dealership.Contracts;
+﻿using Dealership.Common;
+using Dealership.Contracts;
 using Dealership.Engine;
 
 namespace Dealership.CommandProcessors
@@ -13,6 +14,8 @@ namespace Dealership.CommandProcessors
 
         public LogoutCommandProcessor(IUserService userService)
         {
+            Validator.ValidateNull(userService, "userService");
+
             this.userService = userService;
         }
 

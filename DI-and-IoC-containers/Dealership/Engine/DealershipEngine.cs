@@ -1,4 +1,5 @@
-﻿using Dealership.Contracts;
+﻿using Dealership.Common;
+using Dealership.Contracts;
 using System;
 using System.Collections.Generic;
 
@@ -17,6 +18,11 @@ namespace Dealership.Engine
             IReportPrinter reportPrinter, 
             IUserService userService)
         {
+            Validator.ValidateNull(commandReader, "commandReader");
+            Validator.ValidateNull(commandProcessor, "commandProcessor");
+            Validator.ValidateNull(reportPrinter, "reportPrinter");
+            Validator.ValidateNull(userService, "userService");
+
             this.commandReader = commandReader;
             this.commandProcessor = commandProcessor;
             this.reportPrinter = reportPrinter;
@@ -33,8 +39,6 @@ namespace Dealership.Engine
         public void Reset()
         {
             this.userService.DeleteAllUsers();
-            var commandResult = new List<string>();
-            this.reportPrinter.PrintReports(commandResult);
         }
 
         private IEnumerable<string> ProcessCommands(IEnumerable<ICommand> commands)

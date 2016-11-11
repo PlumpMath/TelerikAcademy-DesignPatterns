@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Dealership.Contracts;
 using System.Text;
+using Dealership.Common;
 
 namespace Dealership.Engine
 {
@@ -10,6 +11,8 @@ namespace Dealership.Engine
 
         public ReportPrinter(IOutputWriter outputWriter)
         {
+            Validator.ValidateNull(outputWriter, "outputWriter");
+
             this.outputWriter = outputWriter;
         }
 

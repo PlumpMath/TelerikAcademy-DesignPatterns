@@ -17,6 +17,9 @@ namespace Dealership.CommandProcessors
 
         public AddCommentCommandProcessor(IUserService userService, ICommentFactory commentFactory)
         {
+            Validator.ValidateNull(userService, "userService");
+            Validator.ValidateNull(commentFactory, "commentFactory");
+
             this.userService = userService;
             this.commentFactory = commentFactory;
         }

@@ -1,4 +1,5 @@
-﻿using Dealership.Contracts;
+﻿using Dealership.Common;
+using Dealership.Contracts;
 using Dealership.Engine;
 
 namespace Dealership.CommandProcessors
@@ -14,8 +15,9 @@ namespace Dealership.CommandProcessors
         private readonly IUserService userService;
 
         public LoginCommandProcessor(IUserService userService)
-            : base()
         {
+            Validator.ValidateNull(userService, "userService");
+
             this.userService = userService;
         }
 

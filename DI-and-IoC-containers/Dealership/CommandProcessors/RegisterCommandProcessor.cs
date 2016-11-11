@@ -2,6 +2,7 @@
 using System;
 using Dealership.Engine;
 using Dealership.Common.Enums;
+using Dealership.Common;
 
 namespace Dealership.CommandProcessors
 {
@@ -17,8 +18,10 @@ namespace Dealership.CommandProcessors
         private readonly IUserService userService;
 
         public RegisterCommandProcessor(IUserService userService, IUserFactory userFactory)
-            : base()
         {
+            Validator.ValidateNull(userService, "userService");
+            Validator.ValidateNull(userFactory, "userFactory");
+
             this.userService = userService;
             this.userFactory = userFactory;
         }

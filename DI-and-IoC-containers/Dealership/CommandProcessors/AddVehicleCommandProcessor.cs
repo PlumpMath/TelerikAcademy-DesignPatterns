@@ -2,6 +2,7 @@
 using System;
 using Dealership.Engine;
 using Dealership.Common.Enums;
+using Dealership.Common;
 
 namespace Dealership.CommandProcessors
 {
@@ -16,6 +17,9 @@ namespace Dealership.CommandProcessors
 
         public AddVehicleCommandProcessor(IVehicleFactory vehicleFactory, IUserService userService)
         {
+            Validator.ValidateNull(vehicleFactory, "vehicleFactory");
+            Validator.ValidateNull(userService, "userService");
+
             this.vehicleFactory = vehicleFactory;
             this.userService = userService;
         }
